@@ -7,7 +7,7 @@ no_spam_header="ham\t"
 documents=[]
 labels=[]
 
-with open("SMSSpamCollection") as file_handle:
+with open("SMSSpamCollection", encoding="UTF-8") as file_handle:
     for line in file_handle:
         # 시작 부분에 spam/ham 여부가 있으므로 두가지로 나눔
         if line.startswith(spam_header):
