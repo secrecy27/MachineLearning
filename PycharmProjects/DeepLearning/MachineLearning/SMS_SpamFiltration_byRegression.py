@@ -27,7 +27,7 @@ weights=classifier.coef_[0,:] # coef_ : 계수값 [n_targets:n_features]
 pairs=[]
 for index, value in enumerate(weights):
     pairs.append((abs(value),vocabulary[index]))
-
+    
 # value값 기준으로 정렬
 # lambda x: x[0] -> tuple(x[0],x[1]) x[0]은 value값, x[1]은 vocabulary 순
 pairs.sort(key=lambda x:x[0], reverse=True)
