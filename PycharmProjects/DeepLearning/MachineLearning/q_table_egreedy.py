@@ -31,15 +31,15 @@ for i in range(num_episodes):
 
         new_state, reward, done, info = env.step(action)
 
-        Q[state, action] = reward + dis * np.argmax(Q[new_state, :])
+        Q[state, action] = reward + dis * np.max(Q[new_state, :])
 
         rAll += reward
         state = new_state
     rList.append(rAll)
 
-print("Success rate : ", str(len(rList) / num_episodes))
+print("Success rate : ", str(sum(rList) / num_episodes))
 print("Left Down Right Up")
 print(Q)
 
-plt.bar(range(num_episodes), rList, color="r")
+plt.bar(range(len(rList)), rList, color="r")
 plt.show()
