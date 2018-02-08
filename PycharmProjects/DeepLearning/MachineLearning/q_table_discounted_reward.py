@@ -23,8 +23,9 @@ for i in range(num_episodes):
     dis = 0.9
 
     while not done:
-
+        # 노이즈 추가
         action = np.argmax(Q[state, :] + np.random.randn(1, env.action_space.n) / (i + 1))
+
         new_state, reward, done, info = env.step(action)
 
         # discounted reward
