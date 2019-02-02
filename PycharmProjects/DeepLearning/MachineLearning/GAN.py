@@ -6,9 +6,10 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 mnist = input_data.read_data_sets("./mnist/data/", one_hot=True)
 
-learning_rate = 0.0002
+
 total_epoch = 100
 batch_size = 100
+learning_rate = 0.0002
 n_hidden = 256
 n_input = 28 * 28
 n_noise = 128
@@ -40,7 +41,7 @@ D_b2 = tf.Variable(tf.zeros([1]))
 # 생성자
 def generator(noise_z):
     hidden = tf.nn.relu(tf.matmul(noise_z, G_W1) + G_b1)
-    output = tf.nn.sigmoid(tf.matmul(hidden, D_W2) + G_b2)
+    output = tf.nn.sigmoid(tf.matmul(hidden, G_W2) + G_b2)
     return output
 
 
@@ -54,6 +55,7 @@ def discriminator(inputs):
 # 무작위로 노이즈를 만들어주는 함수
 def get_noise(batch_size, n_noise):
     return np.random.normal(size=(batch_size, n_noise))
+
 
 G = generator(Z)
 D_gene = discriminator(G)  # 생성한 가짜
@@ -72,11 +74,11 @@ loss_G = tf.reduce_mean(tf.log(D_gene))
 # loss_D와 loss_G 두 값 모두 최대화 하여야 하지만 경쟁관계이기에 비례관계는 아니다.
 
 D_var_list = [D_W1, D_b1, D_W2, D_b2]
-G_var_list = [G_W1, G_b1, G_W1, G_b2]
+G_var_list = [G_W1, G_b1, G_W2, G_b2]
 
 # 값을 최대화하여야 하므로 minimize함수에 음수를 붙인다.
-train_D = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(-loss_D, var_list=D_var_list)
-train_G = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(-loss_G, var_list=G_var_list)
+train_D = tf.train.AdamOptimizer(learning_rate).minimize(-loss_D, var_list=D_var_list)
+train_G = tf.train.AdamOptimizer(learning_rate).minimize(-loss_G, var_list=G_var_list)
 
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
@@ -89,8 +91,8 @@ for epoch in range(total_epoch):
         batch_xs, batch_ys = mnist.train.next_batch(batch_size)
         noise = get_noise(batch_size, n_noise)
 
-        loss_val_D, _ = sess.run([loss_D, train_D], feed_dict={X: batch_xs, Z: noise})
-        loss_val_G, _ = sess.run([loss_G, train_G], feed_dict={Z: noise})
+        _, loss_val_D = sess.run([train_D, loss_D], feed_dict={X: batch_xs, Z: noise})
+        _, loss_val_G = sess.run([train_G, loss_G], feed_dict={Z: noise})
 
     print("Epoch : ", "%04d" % epoch, " D loss : {:.4}".format(loss_val_D), " G loss : {:.4}".format(loss_val_G))
 
